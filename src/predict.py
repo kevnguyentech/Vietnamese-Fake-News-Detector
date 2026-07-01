@@ -27,6 +27,14 @@ import warnings
 import numpy as np
 import pandas as pd
 
+VIETNAMESE_CHARS = set("àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ")
+
+def looks_vietnamese(text: str) -> bool:
+    """Rough check: does this text contain Vietnamese diacritics at all?"""
+    low = text.lower()
+    vn_char_count = sum(1 for c in low if c in VIETNAMESE_CHARS)
+    return vn_char_count > 0
+
 from config import (
     BASELINE_MODEL_FILE, PHOBERT_DIR, LABEL_NAMES, TOKENIZER,
     SENSATIONAL_KEYWORDS, CITATION_MARKERS,
@@ -167,6 +175,12 @@ def main():
     if len(text) < 5:
         sys.exit("Text too short to classify.")
 
+    if not looks_vietnamese(text):
+        sys.exit(
+            "This doesn't look like Vietnamese text (no Vietnamese diacritics found). "
+            "This model is trained on Vietnamese news and will give unreliable results on other languages."
+        )
+
     print(f"\nInput ({len(text)} chars): {text[:100]}{'…' if len(text)>100 else ''}")
 
     if args.model == "phobert":
@@ -175,7 +189,6 @@ def main():
         result = predict_tfidf(text)
 
     print_result(result, text)
-
 
 if __name__ == "__main__":
     main()
