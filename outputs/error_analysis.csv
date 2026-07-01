@@ -1,0 +1,11 @@
+id,label_name,confidence,pred_name,text_preview
+VFND_Ac_Fake_9,Fake,0.8540676895617033,Real,"Kinh hoàng bé gái bị chó nhà tấn công, cắn vào khắp người gây phẫn nộ [SEP] “Sẽ cấm tiệt, không cho mang chó vào phố đi "
+VFND_Ac_Fake_45,Fake,0.8377497331410622,Real,"Bé Nhật Lan báo mộng cho người nhà về nghi phạm trước khi bị bắt [SEP] Như Báo Gia đình & Xã hội đã thông tin, sáng qua "
+VFND_Ac_Real_89,Real,0.8245564511778785,Fake,"Con không chịu đi học, mẹ Thái Lan bắt nhặt rác cả ngày [SEP] Asia One ngày 22/1 đưa tin, bà mẹ Thái Lan Nuttanitcha Cho"
+VFDN_So_Fake_7,Fake,0.7710893292128951,Real,"20 ngày nữa VinFast sẽ khuynh đảo thị trường, đi trước các ""ông lớn"" thế giới cả chục năm_360 Xe 360 Xe_VinFast sẽ đi tr"
+VFND_Ac_Fake_23,Fake,0.7429627728435604,Real,TẢI NGAY APP 567LIVE NGẮM GÁI XINH NÓNG BỎNG
+VFND_Ac_Real_70,Real,0.729488796052369,Fake,"Vì sao Toyota Vios tăng giá trong khi xe hãng khác giảm? [SEP] Toyota Vios mới lắp 7 túi khí, giá cao nhất 606 triệu tại"
+VFND_Ac_Fake_1,Fake,0.7248516344987189,Real,"Thủ tướng Abe cúi đầu xin lỗi vì hành động phi thể thao của tuyển Nhật [SEP] Theo Sankei Sports, sáng nay Thủ tướng Nhật"
+VFND_Ac_Fake_14,Fake,0.6401405042112029,Real,"Đề xuất cấm tất cả công chức Hà Nội đổ xăng tại trạm xăng Nhật [SEP] Theo một nguồn tin, chiều ngày 11/10 UBND TP.Hà Nội"
+VFND_Ac_Fake_18,Fake,0.6143657815571257,Real,Hollywood sẽ làm siêu phẩm về Tết Mậu Thân 1968 ở Huế? [SEP] Đạo diễn Michael Mann đã gặp nguyên tổng biên tập báo Thanh
+VFND_Ac_Fake_10,Fake,0.6090429629957568,Real,"Bức vẽ giúp bạn đánh giá mức độ stress của bản thân [SEP] Nhìn bức tranh, bạn có thể thấy vòng tròn đang chuyển động một"
