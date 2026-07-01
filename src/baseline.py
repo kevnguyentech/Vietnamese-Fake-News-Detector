@@ -46,7 +46,7 @@ from sklearn.pipeline import Pipeline
 from config import (
     SEGMENTED_CSV, BASELINE_MODEL_FILE, LABEL_NAMES, RANDOM_SEED,
     TFIDF_MAX_FEATURES, TFIDF_NGRAM_RANGE, TFIDF_SUBLINEAR_TF,
-    N_FOLDS, MODELS_DIR,
+    N_FOLDS, MODELS_DIR, LOGREG_MAX_ITER, LOGREG_C, LOGREG_CLASS_WEIGHT,
 )
 
 HANDCRAFTED_COLS = [
@@ -72,9 +72,9 @@ def make_pipeline() -> dict:
     )
     scaler = StandardScaler()
     clf = LogisticRegression(
-        max_iter=1000,
-        class_weight="balanced",   # ~132 Fake vs ~128 Real, nearly balanced
-        C=1.0,
+        max_iter=LOGREG_MAX_ITER,
+        class_weight=LOGREG_CLASS_WEIGHT,
+        C=LOGREG_C,
         random_state=RANDOM_SEED,
     )
     return {"tfidf": tfidf, "scaler": scaler, "clf": clf}

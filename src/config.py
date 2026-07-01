@@ -48,6 +48,10 @@ TFIDF_SUBLINEAR_TF    = True
 N_FOLDS               = 5
 RANDOM_SEED           = 42
 
+LOGREG_MAX_ITER      = 1000
+LOGREG_C             = 1.0
+LOGREG_CLASS_WEIGHT  = "balanced"
+
 PHOBERT_MODEL_NAME    = "vinai/phobert-base-v2"
 PHOBERT_MAX_LEN       = 256
 PHOBERT_LR            = 2e-5
