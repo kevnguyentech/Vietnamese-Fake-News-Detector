@@ -160,6 +160,8 @@ vietnamese-fake-news-detector/
 │   ├── train_phobert.py       # PhoBERT fine-tuning (needs GPU + internet)
 │   ├── evaluate.py            # confusion matrix + top features + error analysis
 │   └── predict.py             # CLI tool — run this on any Vietnamese text
+├── tests/
+│   └── test_preprocess.py     # unit tests for cleaning + feature extraction
 ├── models/
 │   ├── tfidf_logreg.pkl       # saved baseline (loaded by predict.py)
 │   └── phobert/final/         # saved PhoBERT (after train_phobert.py)
