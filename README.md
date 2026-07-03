@@ -80,11 +80,11 @@ set happened to contain harder borderline articles.
 - **→ FAKE**: `exclamation_count` by a wide margin, then `sensational_count`,
   `question_count`. Vietnamese clickbait is heavily punctuation-marked.
   Specific celebrity gossip terms (gái, xinh, nóng_bỏng, mc) cluster in
-  the Fake side — a large chunk of the fake articles are entertainment gossip.
+  the Fake side - a large chunk of the fake articles are entertainment gossip.
 
 - **→ REAL**: `citation_count` (legitimate journalism cites sources),
   `digit_ratio` (real news has dates, statistics, case counts),
-  `char_count` (real articles are longer — more reporting, less shouting).
+  `char_count` (real articles are longer - more reporting, less shouting).
 
 
 ---
@@ -137,7 +137,7 @@ If it's less than that, the dataset is the bottleneck, not the model choice.
 Both failure modes point to the same underlying limit: the model detects
 **style**, not **truth**. A well-written lie fools it. A dramatically-titled
 true story fools it the other way. This is not fixable by adding more features
-or switching to PhoBERT — it's fundamental to text-only classification without
+or switching to PhoBERT - it's fundamental to text-only classification without
 external fact-checking.
 
 ---
