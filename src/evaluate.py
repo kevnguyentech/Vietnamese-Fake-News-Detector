@@ -136,7 +136,6 @@ def main():
     bundle = joblib.load(BASELINE_MODEL_FILE)
     cv = bundle.get("cv_results", [])
     if cv:
-        import numpy as np
         macro_f1s = [r["macro_f1"] for r in cv]
         accs      = [r["accuracy"]  for r in cv]
         print(f"\nStored CV performance (from baseline.py):")

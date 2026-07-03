@@ -21,11 +21,15 @@ PhoBERT can't do that without additional SHAP/LIME post-processing.
 
 import argparse
 import sys
-import re
-import warnings
 
 import numpy as np
 import pandas as pd
+
+from config import (
+    BASELINE_MODEL_FILE, PHOBERT_DIR, LABEL_NAMES, TOKENIZER,
+    SENSATIONAL_KEYWORDS, CITATION_MARKERS,
+)
+from preprocess import clean_text, get_segmenter, handcrafted_features
 
 VIETNAMESE_CHARS = set("àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ")
 
@@ -34,12 +38,6 @@ def looks_vietnamese(text: str) -> bool:
     low = text.lower()
     vn_char_count = sum(1 for c in low if c in VIETNAMESE_CHARS)
     return vn_char_count > 0
-
-from config import (
-    BASELINE_MODEL_FILE, PHOBERT_DIR, LABEL_NAMES, TOKENIZER,
-    SENSATIONAL_KEYWORDS, CITATION_MARKERS,
-)
-from preprocess import clean_text, get_segmenter, handcrafted_features
 
 
 def predict_tfidf(text: str) -> dict:

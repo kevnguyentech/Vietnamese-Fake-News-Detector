@@ -41,7 +41,6 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, f1_score
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import Pipeline
 
 from config import (
     SEGMENTED_CSV, BASELINE_MODEL_FILE, LABEL_NAMES, RANDOM_SEED,
