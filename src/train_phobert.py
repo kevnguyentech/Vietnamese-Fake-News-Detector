@@ -35,6 +35,8 @@ TRAIN/EVAL STRATEGY:
 """
 
 import sys
+import gc
+import shutil
 import numpy as np
 import pandas as pd
 from pathlib import Path
@@ -134,13 +136,27 @@ def run_fold(fold: int, train_df: pd.DataFrame, val_df: pd.DataFrame,
     print(classification_report(val_df["label"].values, preds,
                                  target_names=LABEL_NAMES, zero_division=0))
 
-    return {
-        "fold":     fold,
-        "macro_f1": metrics.get("eval_macro_f1", 0),
-        "accuracy": metrics.get("eval_accuracy", 0),
-        "trainer":  trainer,
-        "model":    model,
+    # Persist this fold's best checkpoint now (load_best_model_at_end
+    # already loaded it into trainer.model), instead of keeping the
+    # trainer/model alive in memory until every fold has finished.
+    fold_model_dir = save_dir / f"fold_{fold}_best"
+    trainer.save_model(str(fold_model_dir))
+
+    result = {
+        "fold":      fold,
+        "macro_f1":  metrics.get("eval_macro_f1", 0),
+        "accuracy":  metrics.get("eval_accuracy", 0),
+        "model_dir": fold_model_dir,
     }
+
+    # Free this fold's model before the next fold starts. With 5 folds
+    # kept alive simultaneously, peak memory was ~5x one PhoBERT model.
+    del model, trainer
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
+    return result
 
 
 def main():
@@ -179,7 +195,9 @@ def main():
     best = max(fold_results, key=lambda r: r["macro_f1"])
     print(f"\nBest fold: {best['fold']}  macro_f1={best['macro_f1']:.3f}")
     final_dir = PHOBERT_DIR / "final"
-    best["trainer"].save_model(str(final_dir))
+    if final_dir.exists():
+        shutil.rmtree(final_dir)
+    shutil.copytree(best["model_dir"], final_dir)
     tokenizer.save_pretrained(str(final_dir))
     print(f"Saved best model -> {final_dir}")
     print("\nTo use: python src/predict.py --model phobert 'your text here'")
