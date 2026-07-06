@@ -16,9 +16,18 @@ def test_clean_text_caps_repeated_punctuation():
     assert "!!!" in result, f"Expected !!! preserved: {result}"
 
 
-def test_clean_text_lowercases():
+def test_clean_text_preserves_case():
     result = clean_text("BÁO ĐỘNG KHẨN CẤP")
-    assert result == result.lower(), f"Not lowercased: {result}"
+    assert result == "BÁO ĐỘNG KHẨN CẤP", f"Case should be preserved: {result}"
+
+
+def test_caps_ratio_reflects_case_after_cleaning():
+    # Regression test: clean_text() used to lowercase before
+    # handcrafted_features() ever saw the text, so caps_ratio was 0
+    # for every article regardless of input.
+    cleaned = clean_text("CẢNH BÁO khẩn cấp")
+    feats = handcrafted_features(cleaned)
+    assert feats["caps_ratio"] > 0, f"Expected nonzero caps_ratio, got {feats['caps_ratio']}"
 
 
 def test_handcrafted_features_counts_exclamations_and_citations():

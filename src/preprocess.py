@@ -43,8 +43,9 @@ def clean_text(text: str) -> str:
     - HTML tags stripped (some articles have residual markup)
     - Repeated whitespace collapsed
     - Repeated punctuation capped at 3 (!!!! -> !!!, real signal for tone)
-    - Lowercase (Vietnamese doesn't use capitalisation the way English
-      does for proper nouns — diacritics carry the meaningful marks)
+    - Case preserved (handcrafted_features() needs real casing for
+      caps_ratio; callers that need lowercase, like the segmenter,
+      lowercase explicitly at the call site)
     - Emojis kept: in social-media posts they carry real sentiment signal
     """
     if not isinstance(text, str):
@@ -58,8 +59,6 @@ def clean_text(text: str) -> str:
     text = re.sub(r"([!?.]){4,}", r"\1\1\1", text)
     # collapse whitespace
     text = re.sub(r"\s+", " ", text).strip()
-    # lowercase
-    text = text.lower()
     return text
 
 
@@ -134,7 +133,7 @@ def main():
 
     print(f"Segmenting with '{TOKENIZER}' (this takes ~30s for 260 articles) …")
     segment = get_segmenter(TOKENIZER)
-    df["text_seg"] = df["text_clean"].apply(segment)
+    df["text_seg"] = df["text_clean"].str.lower().apply(segment)
 
     print("Computing handcrafted features …")
     feats = df["text_clean"].apply(handcrafted_features).apply(pd.Series)

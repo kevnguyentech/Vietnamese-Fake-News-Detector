@@ -52,7 +52,7 @@ def predict_tfidf(text: str) -> dict:
 
     cleaned  = clean_text(text)
     segment  = get_segmenter(TOKENIZER)
-    segmented = segment(cleaned)
+    segmented = segment(cleaned.lower())
 
     hf = handcrafted_features(cleaned)
     X_tfidf = tfidf.transform([segmented])
@@ -100,7 +100,7 @@ def predict_phobert(text: str) -> dict:
 
     segment  = get_segmenter(TOKENIZER)
     cleaned  = clean_text(text)
-    segmented = segment(cleaned)
+    segmented = segment(cleaned.lower())
 
     tokenizer = AutoTokenizer.from_pretrained(str(model_path))
     model     = AutoModelForSequenceClassification.from_pretrained(str(model_path))
