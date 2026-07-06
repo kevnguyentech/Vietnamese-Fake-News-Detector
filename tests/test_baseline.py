@@ -1,0 +1,39 @@
+import sys
+import os
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+
+import pandas as pd
+
+from baseline import make_pipeline, build_X, HANDCRAFTED_COLS
+
+
+def test_build_X_shape_matches_tfidf_vocab_plus_handcrafted_cols():
+    # Regression check for the tfidf/handcrafted hstack in build_X():
+    # if that concatenation ever drops or duplicates a matrix, the
+    # column count silently stops matching tfidf vocab + HANDCRAFTED_COLS.
+    df = pd.DataFrame({
+        "text_seg": [
+            "tin tức thật",
+            "tin giả mạo",
+            "báo chí chính thống",
+            "tin đồn thất thiệt",
+        ],
+        "char_count":         [10, 12, 15, 14],
+        "word_count":         [3, 3, 4, 4],
+        "exclamation_count":  [0, 1, 0, 2],
+        "question_count":     [0, 0, 0, 1],
+        "caps_ratio":         [0.0, 0.05, 0.0, 0.1],
+        "sensational_count":  [0, 1, 0, 2],
+        "citation_count":     [0, 0, 1, 0],
+        "avg_word_len":       [3.3, 3.5, 3.6, 3.4],
+        "digit_ratio":        [0.0, 0.0, 0.0, 0.0],
+    })
+
+    comps = make_pipeline()
+    X = build_X(df, comps["tfidf"], comps["scaler"], fit=True)
+
+    expected_cols = len(comps["tfidf"].get_feature_names_out()) + len(HANDCRAFTED_COLS)
+    assert X.shape == (len(df), expected_cols), (
+        f"build_X shape {X.shape} != (n_rows, tfidf_vocab + "
+        f"len(HANDCRAFTED_COLS)) = {(len(df), expected_cols)}"
+    )
