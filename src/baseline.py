@@ -98,11 +98,13 @@ def build_X(df, tfidf, scaler, fit=False, handcrafted_cols=None):
     return hstack([X_tfidf, csr_matrix(X_hand)])
 
 
-def cv_eval(df: pd.DataFrame) -> list:
-    """Run 5-fold stratified CV, return per-fold metrics."""
+def cv_eval(df: pd.DataFrame) -> tuple:
+    """Run 5-fold stratified CV; return (per-fold metrics, oos_preds, oos_proba)."""
     y = df["label"].values
     skf = StratifiedKFold(n_splits=N_FOLDS, shuffle=True, random_state=RANDOM_SEED)
     results = []
+    oos_preds = np.zeros(len(df), dtype=int)
+    oos_proba = np.zeros((len(df), 2))
 
     for fold, (train_idx, val_idx) in enumerate(skf.split(df, y), 1):
         train_df = df.iloc[train_idx]
@@ -114,6 +116,9 @@ def cv_eval(df: pd.DataFrame) -> list:
 
         comps["clf"].fit(X_train, y[train_idx])
         preds = comps["clf"].predict(X_val)
+        proba = comps["clf"].predict_proba(X_val)   
+        oos_preds[val_idx] = preds                  
+        oos_proba[val_idx] = proba                  
 
         report = classification_report(
             y[val_idx], preds,
@@ -134,7 +139,7 @@ def cv_eval(df: pd.DataFrame) -> list:
               f"accuracy={report['accuracy']:.3f}  macro_f1={macro_f1:.3f}  "
               f"Real_f1={report['Real']['f1-score']:.3f}  Fake_f1={report['Fake']['f1-score']:.3f}")
 
-    return results
+    return results, oos_preds, oos_proba
 
 
 def get_top_features(tfidf: TfidfVectorizer, clf: LogisticRegression, n: int = 15):
@@ -160,7 +165,7 @@ def main():
     print(f"Loaded {len(df)} articles  (Fake={sum(df.label==1)}  Real={sum(df.label==0)})")
     print(f"\n--- {N_FOLDS}-fold Stratified CV ---")
 
-    results = cv_eval(df)
+    results, oos_preds, oos_proba = cv_eval(df)
 
     # Summary
     macro_f1s = [r["macro_f1"] for r in results]
@@ -194,6 +199,8 @@ def main():
         "handcrafted_cols":  HANDCRAFTED_COLS,
         "label_names":       LABEL_NAMES,
         "cv_results":        results,
+        "oos_preds":         oos_preds,    
+        "oos_proba":         oos_proba,
     }, BASELINE_MODEL_FILE)
     print(f"\nSaved model -> {BASELINE_MODEL_FILE}")
 

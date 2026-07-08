@@ -34,7 +34,7 @@ def plot_confusion_matrix(y_true, y_pred):
     ConfusionMatrixDisplay(cm, display_labels=LABEL_NAMES).plot(
         ax=ax, cmap="Blues", colorbar=False, values_format="d"
     )
-    ax.set_title("Predicted vs. Actual\n(full dataset, in-sample)")
+    ax.set_title("Predicted vs. Actual\n(out-of-sample CV predictions)")
     fig.tight_layout()
     path = OUTPUTS_DIR / "confusion_matrix.png"
     fig.savefig(path, dpi=150)
@@ -115,19 +115,26 @@ def error_analysis(df, y_pred, y_proba):
 
 def main():
     tfidf, scaler, clf, handcrafted_cols = load_model()
+    bundle = joblib.load(BASELINE_MODEL_FILE)
     df = pd.read_csv(SEGMENTED_CSV)
     df = df[df["label"].isin([0, 1])].reset_index(drop=True)
 
-    X = build_X(df, tfidf, scaler, fit=False, handcrafted_cols=handcrafted_cols)
-    y_pred  = clf.predict(X)
-    y_proba = clf.predict_proba(X)
+    oos_preds = bundle.get("oos_preds")
+    oos_proba = bundle.get("oos_proba")
+
+    if oos_preds is not None and oos_proba is not None:
+        y_pred  = oos_preds
+        y_proba = oos_proba
+    else:
+        print("Warning: bundle missing OOS predictions; using in-sample. Re-run baseline.py.")
+        X = build_X(df, tfidf, scaler, fit=False, handcrafted_cols=handcrafted_cols)
+        y_pred  = clf.predict(X)
+        y_proba = clf.predict_proba(X)
 
     plot_confusion_matrix(df["label"].values, y_pred)
     plot_top_features(tfidf, clf, handcrafted_cols)
     error_analysis(df, y_pred, y_proba)
 
-    # Print CV numbers that were stored at training time
-    bundle = joblib.load(BASELINE_MODEL_FILE)
     cv = bundle.get("cv_results", [])
     if cv:
         macro_f1s = [r["macro_f1"] for r in cv]
