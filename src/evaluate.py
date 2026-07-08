@@ -15,23 +15,17 @@ import joblib
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from scipy.sparse import hstack, csr_matrix
 from sklearn.metrics import ConfusionMatrixDisplay, confusion_matrix
 
 from config import (
     SEGMENTED_CSV, BASELINE_MODEL_FILE, OUTPUTS_DIR, LABEL_NAMES,
 )
+from baseline import build_X
 
 
 def load_model():
     bundle = joblib.load(BASELINE_MODEL_FILE)
     return bundle["tfidf"], bundle["scaler"], bundle["clf"], bundle["handcrafted_cols"]
-
-
-def build_X(df, tfidf, scaler, handcrafted_cols):
-    X_tfidf = tfidf.transform(df["text_seg"])
-    X_hand  = scaler.transform(df[handcrafted_cols].fillna(0))
-    return hstack([X_tfidf, csr_matrix(X_hand)])
 
 
 def plot_confusion_matrix(y_true, y_pred):
@@ -124,7 +118,7 @@ def main():
     df = pd.read_csv(SEGMENTED_CSV)
     df = df[df["label"].isin([0, 1])].reset_index(drop=True)
 
-    X = build_X(df, tfidf, scaler, handcrafted_cols)
+    X = build_X(df, tfidf, scaler, fit=False, handcrafted_cols=handcrafted_cols)
     y_pred  = clf.predict(X)
     y_proba = clf.predict_proba(X)
 

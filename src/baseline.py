@@ -79,17 +79,21 @@ def make_pipeline() -> dict:
     return {"tfidf": tfidf, "scaler": scaler, "clf": clf}
 
 
-def build_X(df, tfidf, scaler, fit=False):
+def build_X(df, tfidf, scaler, fit=False, handcrafted_cols=None):
     """
     Stack TF-IDF matrix + scaled handcrafted features horizontally.
     fit=True during training (fit_transform), False during eval (transform only).
+    handcrafted_cols defaults to module-level HANDCRAFTED_COLS; pass it
+    explicitly when loading from a saved bundle to guard against column drift.
     """
+    if handcrafted_cols is None:
+        handcrafted_cols = HANDCRAFTED_COLS
     if fit:
         X_tfidf = tfidf.fit_transform(df["text_seg"])
-        X_hand  = scaler.fit_transform(df[HANDCRAFTED_COLS].fillna(0))
+        X_hand  = scaler.fit_transform(df[handcrafted_cols].fillna(0))
     else:
         X_tfidf = tfidf.transform(df["text_seg"])
-        X_hand  = scaler.transform(df[HANDCRAFTED_COLS].fillna(0))
+        X_hand  = scaler.transform(df[handcrafted_cols].fillna(0))
 
     return hstack([X_tfidf, csr_matrix(X_hand)])
 

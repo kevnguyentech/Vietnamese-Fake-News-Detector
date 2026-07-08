@@ -37,3 +37,27 @@ def test_build_X_shape_matches_tfidf_vocab_plus_handcrafted_cols():
         f"build_X shape {X.shape} != (n_rows, tfidf_vocab + "
         f"len(HANDCRAFTED_COLS)) = {(len(df), expected_cols)}"
     )
+
+def test_build_X_explicit_handcrafted_cols_overrides_default():
+    # Guard against column drift: if the saved bundle has a different
+    # column list than the current module default, build_X must use the
+    # bundle's list, not HANDCRAFTED_COLS.
+    df = pd.DataFrame({
+        "text_seg":          ["tin tức thật", "tin giả mạo"],
+        "char_count":        [10, 12],
+        "word_count":        [3, 3],
+        "exclamation_count": [0, 1],
+        "question_count":    [0, 0],
+        "caps_ratio":        [0.0, 0.05],
+        "sensational_count": [0, 1],
+        "citation_count":    [0, 0],
+        "avg_word_len":      [3.3, 3.5],
+        "digit_ratio":       [0.0, 0.0],
+    })
+    subset = ["char_count", "word_count"]  # 2 cols, not the full 9
+
+    comps = make_pipeline()
+    X = build_X(df, comps["tfidf"], comps["scaler"], fit=True, handcrafted_cols=subset)
+
+    expected_cols = len(comps["tfidf"].get_feature_names_out()) + len(subset)
+    assert X.shape[1] == expected_cols
