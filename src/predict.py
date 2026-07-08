@@ -44,6 +44,11 @@ def predict_tfidf(text: str) -> dict:
     import joblib
     from scipy.sparse import hstack, csr_matrix
 
+    if not BASELINE_MODEL_FILE.exists():
+        sys.exit(
+            f"Trained model not found at {BASELINE_MODEL_FILE}.\n"
+            "Run: python src/baseline.py"
+        )
     bundle = joblib.load(BASELINE_MODEL_FILE)
     tfidf  = bundle["tfidf"]
     scaler = bundle["scaler"]
