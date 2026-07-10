@@ -34,10 +34,10 @@ from preprocess import clean_text, get_segmenter, handcrafted_features
 VIETNAMESE_CHARS = set("àáảãạăằắẳẵặâầấẩẫậđèéẻẽẹêềếểễệìíỉĩịòóỏõọôồốổỗộơờớởỡợùúủũụưừứửữựỳýỷỹỵ")
 
 def looks_vietnamese(text: str) -> bool:
-    """Rough check: does this text contain Vietnamese diacritics at all?"""
+    """Check: Vietnamese diacritics make up at least 3% of characters."""
     low = text.lower()
     vn_char_count = sum(1 for c in low if c in VIETNAMESE_CHARS)
-    return vn_char_count > 0
+    return vn_char_count / max(len(low), 1) >= 0.03
 
 
 def predict_tfidf(text: str) -> dict:
