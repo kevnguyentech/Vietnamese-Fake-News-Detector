@@ -24,8 +24,7 @@ from baseline import build_X
 
 
 def load_model():
-    bundle = joblib.load(BASELINE_MODEL_FILE)
-    return bundle["tfidf"], bundle["scaler"], bundle["clf"], bundle["handcrafted_cols"]
+    return joblib.load(BASELINE_MODEL_FILE)
 
 
 def plot_confusion_matrix(y_true, y_pred):
@@ -114,8 +113,11 @@ def error_analysis(df, y_pred, y_proba):
 
 
 def main():
-    tfidf, scaler, clf, handcrafted_cols = load_model()
-    bundle = joblib.load(BASELINE_MODEL_FILE)
+    bundle = load_model()
+    tfidf          = bundle["tfidf"]
+    scaler         = bundle["scaler"]
+    clf            = bundle["clf"]
+    handcrafted_cols = bundle["handcrafted_cols"]
     df = pd.read_csv(SEGMENTED_CSV)
     df = df[df["label"].isin([0, 1])].reset_index(drop=True)
 
