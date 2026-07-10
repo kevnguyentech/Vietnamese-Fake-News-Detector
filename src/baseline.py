@@ -142,7 +142,8 @@ def cv_eval(df: pd.DataFrame) -> tuple:
     return results, oos_preds, oos_proba
 
 
-def get_top_features(tfidf: TfidfVectorizer, clf: LogisticRegression, n: int = 15):
+def get_top_features(tfidf: TfidfVectorizer, clf: LogisticRegression,
+                     handcrafted_cols: list, n: int = 15):
     """
     LogReg coefficients directly tell you which words push toward Fake
     (positive coefficient) or Real (negative coefficient). This is the
@@ -151,7 +152,7 @@ def get_top_features(tfidf: TfidfVectorizer, clf: LogisticRegression, n: int = 1
     """
     # Feature names: TF-IDF vocab + handcrafted column names
     tfidf_names = tfidf.get_feature_names_out().tolist()
-    all_names   = tfidf_names + HANDCRAFTED_COLS
+    all_names   = tfidf_names + handcrafted_cols
     coefs       = clf.coef_[0]
 
     top_fake  = [(all_names[i], coefs[i]) for i in np.argsort(coefs)[-n:][::-1]]
@@ -182,7 +183,7 @@ def main():
     X_all = build_X(df, comps["tfidf"], comps["scaler"], fit=True)
     comps["clf"].fit(X_all, df["label"].values)
 
-    top_fake, top_real = get_top_features(comps["tfidf"], comps["clf"])
+    top_fake, top_real = get_top_features(comps["tfidf"], comps["clf"], HANDCRAFTED_COLS)
 
     print("\nTop words -> FAKE:")
     for word, coef in top_fake:
