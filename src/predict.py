@@ -27,7 +27,6 @@ import pandas as pd
 
 from config import (
     BASELINE_MODEL_FILE, PHOBERT_DIR, LABEL_NAMES, TOKENIZER,
-    SENSATIONAL_KEYWORDS, CITATION_MARKERS,
 )
 from preprocess import clean_text, get_segmenter, handcrafted_features
 
