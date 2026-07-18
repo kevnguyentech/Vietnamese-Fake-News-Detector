@@ -126,7 +126,7 @@ def predict_phobert(text: str) -> dict:
     }
 
 
-def print_result(result: dict, text: str):
+def print_result(result: dict):
     pred  = result["prediction"]
     conf  = result["confidence"]
     probs = result["probabilities"]
@@ -190,7 +190,7 @@ def main():
     else:
         result = predict_tfidf(text)
 
-    print_result(result, text)
+    print_result(result)
 
 if __name__ == "__main__":
     main()
