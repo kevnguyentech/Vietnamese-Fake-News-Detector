@@ -141,6 +141,7 @@ def run_fold(fold: int, train_df: pd.DataFrame, val_df: pd.DataFrame,
     # trainer/model alive in memory until every fold has finished.
     fold_model_dir = save_dir / f"fold_{fold}_best"
     trainer.save_model(str(fold_model_dir))
+    shutil.rmtree(str(save_dir / f"fold_{fold}"), ignore_errors=True)
 
     result = {
         "fold":      fold,
@@ -149,8 +150,7 @@ def run_fold(fold: int, train_df: pd.DataFrame, val_df: pd.DataFrame,
         "model_dir": fold_model_dir,
     }
 
-    # Free this fold's model before the next fold starts. With 5 folds
-    # kept alive simultaneously, peak memory was ~5x one PhoBERT model.
+    # Free this fold's model before the next fold starts.
     del model, trainer
     gc.collect()
     if torch.cuda.is_available():
@@ -199,6 +199,8 @@ def main():
         shutil.rmtree(final_dir)
     shutil.copytree(best["model_dir"], final_dir)
     tokenizer.save_pretrained(str(final_dir))
+    for r in fold_results:
+        shutil.rmtree(str(r["model_dir"]), ignore_errors=True)
     print(f"Saved best model -> {final_dir}")
     print("\nTo use: python src/predict.py --model phobert 'your text here'")
 
