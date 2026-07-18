@@ -13,6 +13,7 @@ Run:
     python src/fetch_data.py
 """
 
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -43,7 +44,6 @@ def main():
     if not dataset_src.exists():
         sys.exit(f"Expected Dataset/ inside the clone — not found at {dataset_src}")
 
-    import shutil
     if VFND_DIR.exists():
         shutil.rmtree(VFND_DIR)
     shutil.move(str(dataset_src), str(VFND_DIR))
