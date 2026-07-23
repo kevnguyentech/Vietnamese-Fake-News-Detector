@@ -15,5 +15,5 @@ matplotlib==3.11.0
 # PhoBERT fine-tuning (optional - only needed for train_phobert.py)
 # not yet installed/tested in this repo - pin once used
 # Run: pip install transformers torch
-transformers>=4.38.0
-torch>=2.0.0
+# transformers>=4.38.0
+# torch>=2.0.0
