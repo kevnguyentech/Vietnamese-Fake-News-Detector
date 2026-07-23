@@ -129,10 +129,12 @@ def run_fold(fold: int, train_df: pd.DataFrame, val_df: pd.DataFrame,
         callbacks=[EarlyStoppingCallback(early_stopping_patience=2)],
     )
     trainer.train()
-    metrics = trainer.evaluate()
 
-    # Print fold results
-    preds = np.argmax(trainer.predict(val_ds).predictions, axis=-1)
+    # trainer.predict returns PredictionOutput(predictions, label_ids, metrics);
+    # one inference pass instead of two, metrics prefixed with "test_" here.
+    pred_output = trainer.predict(val_ds)
+    metrics = pred_output.metrics
+    preds = np.argmax(pred_output.predictions, axis=-1)
     print(f"\nFold {fold} classification report:")
     print(classification_report(val_df["label"].values, preds,
                                  target_names=LABEL_NAMES, zero_division=0))
@@ -146,8 +148,8 @@ def run_fold(fold: int, train_df: pd.DataFrame, val_df: pd.DataFrame,
 
     result = {
         "fold":      fold,
-        "macro_f1":  metrics.get("eval_macro_f1", 0),
-        "accuracy":  metrics.get("eval_accuracy", 0),
+        "macro_f1":  metrics.get("test_macro_f1", 0),
+        "accuracy":  metrics.get("test_accuracy", 0),
         "model_dir": fold_model_dir,
     }
 
