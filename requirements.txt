@@ -4,6 +4,7 @@ numpy==2.5.0
 pandas==3.0.3
 scipy==1.18.0
 joblib==1.5.3
+pytest==8.3.5
 
 # Vietnamese NLP
 underthesea==9.5.0
