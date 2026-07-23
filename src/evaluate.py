@@ -124,11 +124,17 @@ def main():
     oos_preds = bundle.get("oos_preds")
     oos_proba = bundle.get("oos_proba")
 
-    if oos_preds is not None and oos_proba is not None:
+    oos_valid = (oos_preds is not None and oos_proba is not None
+                 and len(oos_preds) == len(df))
+    if oos_valid:
         y_pred  = oos_preds
         y_proba = oos_proba
     else:
-        print("Warning: bundle missing OOS predictions; using in-sample. Re-run baseline.py.")
+        if oos_preds is not None and len(oos_preds) != len(df):
+            print(f"Warning: bundle has {len(oos_preds)} OOS rows but dataset has "
+                  f"{len(df)} rows; re-run baseline.py. Falling back to in-sample.")
+        else:
+            print("Warning: bundle missing OOS predictions; using in-sample. Re-run baseline.py.")
         X = build_X(df, tfidf, scaler, fit=False, handcrafted_cols=handcrafted_cols)
         y_pred  = clf.predict(X)
         y_proba = clf.predict_proba(X)
